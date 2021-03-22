@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spark-master
+  labels:
+    component: "spark-master"
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      component: "spark-master"
+  template:
+    metadata:
+      labels:
+        component: "spark-master"
+    spec:
+      hostname: spark-k8
+      containers:
+        - name: "spark-master"
+          image: "spark:mikepieters"
+          command: ["/bin/sh","-c"]
+          args: ["/opt/spark/bin/spark-class org.apache.spark.deploy.master.Master"]
+          ports:
+            - containerPort: 7077 # Default port for master service
+            - containerPort: 8080 # Default port for webui
+          env:
+          - name: SPARK_MASTER_HOST
+            value: "spark-k8"
